@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Rules</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #eee5da;
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            padding: 10px;
+        }
+        .card {
+            border: 2px solid white;
+            border-radius: 10px;
+            padding: 30px;
+            background-color: #262424;
+            max-width: 500px;
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+            color: white;
+            transition: transform 0.3s ease;
+        }
+        .card:hover {
+            transform: scale(1.05);
+        }
+        .list-group-item {
+            background-color: black;
+            color: white;
+            border: 1px solid white;
+        }
+        .btn-custom {
+            border: 2px solid white;
+            color: white;
+            background: none;
+            padding: 10px 15px;
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        .btn-custom:hover {
+            background-color: white;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>📜 Quiz Rules</h2>
+        <p>Please read the rules before starting the quiz.</p>
+        <ul class="list-group text-start">
+            <li class="list-group-item">⏳ You have 30 seconds per question.</li>
+            <li class="list-group-item">✅ Each question has only one correct answer.</li>
+            <li class="list-group-item">📝 The quiz consists of 20 questions.</li>
+            <li class="list-group-item">🏆 Your final score will be displayed at the end.</li>
+        </ul>
+        <button onclick="startQuiz()" class="btn btn-custom mt-3">Select subject 🚀</button>
+    </div>
+
+    <script>
+        function startQuiz() {
+            window.location.href = 'subject.html';
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

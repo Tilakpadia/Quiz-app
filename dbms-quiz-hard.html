@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DBMS Quiz - hard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="question.css">
+</head>
+<body>
+    <div class="quiz-container">
+        <h2>DBMS Quiz - hard</h2>
+        <p id="welcome"></p>
+        <div class="progress" id="progress">Question 1 of 5</div>
+        <div class="timer" id="timer">Time Left: <span id="time">30</span>s</div>
+        <div class="question" id="question">Question will appear here</div>
+        <div class="options" id="options"></div>
+        <div class="navigation">
+            <button id="prev">Previous</button>
+            <button id="next">Next</button>
+        </div>
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        window.onload = function () {
+            let username = localStorage.getItem("username") || "Guest";
+            document.getElementById("welcome").textContent = `Welcome, ${username}!`;
+
+            const questions = [
+                { q: "Which type of database consistency ensures that all copies of data are updated simultaneously?", a: "Eventual Consistency", o: ["Immediate Consistency", "Referential Consistency", "Eventual Consistency", "Atomic Consistency"] },
+                { q: "Which anomaly occurs when deleting a row also removes useful information?", a: "Deletion Anomaly", o: ["Insertion Anomaly", "Update Anomaly", "Deletion Anomaly", "Referential Anomaly"] },
+                { q: "Which of the following is an example of a distributed database?", a: "Google Spanner", o: ["Google Spanner", "SQLite", "MS Access", "MongoDB"] },
+                { q: "Which technique is used to ensure data remains available even if part of the database system fails?", a: "Replication", o: ["Sharding", "Normalization", "Replication", "Indexing"] },
+                { q: "Which database storage mechanism allows for parallel query execution?", a: "Column-Oriented Storage", o: ["Row-Oriented Storage", "Column-Oriented Storage", "Heap Storage", "Sequential Storage"] },
+                { q: "Which isolation level allows non-repeatable reads but prevents dirty reads?", a: "Read Committed", o: ["Serializable", "Read Uncommitted", "Read Committed", "Repeatable Read"] },
+                { q: "Which of the following is a disadvantage of database denormalization?", a: "Increased data redundancy", o: ["Improved read performance", "Faster indexing", "Increased data redundancy", "Stronger data integrity"] },
+                { q: "Which join returns records that have matching values in both tables and also includes unmatched rows?", a: "FULL OUTER JOIN", o: ["INNER JOIN", "LEFT JOIN", "RIGHT JOIN", "FULL OUTER JOIN"] },
+                { q: "Which SQL command ensures that a transaction is permanently saved?", a: "COMMIT", o: ["SAVEPOINT", "ROLLBACK", "COMMIT", "TRANSACTION"] },
+                { q: "What is the purpose of the redo log in a DBMS?", a: "To ensure recovery from crashes", o: ["To store deleted records", "To improve query performance", "To store execution plans", "To ensure recovery from crashes"] },
+                { q: "Which NoSQL database model is best suited for hierarchical data storage?", a: "Document-Oriented", o: ["Graph", "Key-Value", "Document-Oriented", "Column-Family"] },
+                { q: "Which database design technique partitions a large table into smaller, more manageable pieces?", a: "Sharding", o: ["Denormalization", "Sharding", "Indexing", "Replication"] },
+                { q: "What is a phantom read in database transactions?", a: "A new record appearing during a transaction", o: ["A new record appearing during a transaction", "A record being updated incorrectly", "A transaction failing due to an integrity constraint", "A duplicate row appearing in a query"] },
+                { q: "Which protocol is commonly used to ensure distributed database consistency?", a: "Two-Phase Commit", o: ["ACID", "BASE", "Two-Phase Commit", "MVCC"] },
+                { q: "What happens if a deadlock occurs in a database system?", a: "Transactions are rolled back", o: ["Transactions are merged", "Transactions are paused indefinitely", "Transactions are rolled back", "Transactions proceed without errors"] },
+                { q: "Which type of index speeds up full-text searches?", a: "Inverted Index", o: ["Clustered Index", "B-Tree Index", "Hash Index", "Inverted Index"] },
+                { q: "Which query optimization technique avoids recomputation of expensive queries?", a: "Materialized Views", o: ["Stored Procedures", "Materialized Views", "Denormalization", "Indexing"] },
+                { q: "Which locking strategy prevents concurrent transactions from modifying the same data?", a: "Pessimistic Locking", o: ["Optimistic Locking", "Pessimistic Locking", "Shared Locking", "Exclusive Locking"] },
+                { q: "Which SQL function returns the nth highest salary from a table?", a: "DENSE_RANK()", o: ["RANK()", "NTILE()", "DENSE_RANK()", "ROW_NUMBER()"] },
+                { q: "Which component of a DBMS manages transactions and ensures ACID compliance?", a: "Transaction Manager", o: ["Query Processor", "Storage Engine", "Transaction Manager", "Concurrency Controller"] }
+            ];
+
+
+
+            
+            let currentQuestion = 0;
+            let score = 0;
+            let selectedAnswer = null;
+            let timer = 30;
+            let interval;
+
+            function updateProgress() {
+                document.getElementById("progress").textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+            }
+
+            function startTimer() {
+                clearInterval(interval);
+                timer = 30;
+                document.getElementById("time").textContent = timer;
+                interval = setInterval(() => {
+                    if (timer > 0) {
+                        timer--;
+                        document.getElementById("time").textContent = timer;
+                    } else {
+                        clearInterval(interval);
+                        alert("Time is up!");
+                        nextQuestion();
+                    }
+                }, 1000);
+            }
+
+            function nextQuestion() {
+                if (selectedAnswer === questions[currentQuestion].a) score++;
+                currentQuestion++;
+                loadQuestion();
+            }
+
+            function loadQuestion() {
+                if (currentQuestion >= questions.length) {
+                    clearInterval(interval);
+                    document.getElementById("timer").style.display = "none";
+                    document.getElementById("question").style.display = "none";
+                    document.getElementById("options").style.display = "none";
+                    document.getElementById("progress").style.display = "none";
+                    document.querySelector(".navigation").style.display = "none";
+                    document.getElementById("result").style.display = "block";
+                    document.getElementById("result").textContent = `Quiz Finished! Your Score: ${score}/${questions.length}`;
+                    return;
+                }
+                document.getElementById("question").textContent = questions[currentQuestion].q;
+                document.getElementById("options").innerHTML = "";
+                selectedAnswer = null;
+                if (currentQuestion > 0) {
+                    document.getElementById("prev").disabled = false;  
+                }
+                else {
+                    document.getElementById("prev").disabled = true;    
+                }
+                document.getElementById("next").disabled = true; // Disable next button on new question
+                updateProgress();
+                
+                questions[currentQuestion].o.forEach(option => {
+                    const button = document.createElement("button");
+                    button.classList.add("option");
+                    button.textContent = option;
+                    button.onclick = () => {
+                        document.querySelectorAll(".option").forEach(btn => btn.style.background = "#262424");
+                        button.style.background = "#4e4a4a";
+                        selectedAnswer = option;
+                        document.getElementById("next").disabled = false; // Enable next button when an option is selected
+                    };
+                    document.getElementById("options").appendChild(button);
+                });
+                startTimer();
+            }
+
+            document.getElementById("next").addEventListener("click", function () {
+                if (!selectedAnswer) {
+                    alert("Please select an answer before proceeding.");
+                    return;
+                }
+                nextQuestion();
+            });
+
+            document.getElementById("prev").addEventListener("click", function () {
+                if (currentQuestion > 0) {
+                    currentQuestion--;
+                    loadQuestion();
+                }
+            });
+
+            loadQuestion();
+        };
+    </script>
+</body>
+</html>

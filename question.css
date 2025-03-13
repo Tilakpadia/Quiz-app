@@ -1,0 +1,110 @@
+body {
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: #262424;
+    color: white;
+    padding: 10px;
+}
+.quiz-container {
+    width: 90%;
+    max-width: 500px;
+    background: white;
+    padding: 25px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    text-align: center;
+    color: #262424;
+}
+.progress {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #262424;
+}
+.question {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+.options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.option {
+    padding: 12px;
+    background: #262424;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.3s;
+}
+.option:hover {
+    background: #3a3a3a;
+}
+.selected {
+    background: #555 !important;
+}
+.navigation {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+.navigation button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    background: #262424;
+    color: white;
+    transition: background 0.3s;
+}
+.navigation button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+.navigation button:hover:not(:disabled) {
+    background: #3a3a3a;
+}
+.timer {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #e53e3e;
+}
+/* .result {
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 20px;
+    color: #262424;
+    display: none;
+} */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .result {
+        border-radius: 50px;
+        font-size: 28px;
+        font-weight: bold;
+        margin-top: 25px;
+        color: white;
+        display: none;
+        text-align: center;
+        background: linear-gradient(135deg, #454547, #807f82); /* Gradient effect */
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
+        width: 80%;
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+        animation: fadeIn 0.8s ease-in-out;
+    }

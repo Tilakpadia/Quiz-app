@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DBMS Quiz - moderate</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="question.css">
+</head>
+<body>
+    <div class="quiz-container">
+        <h2>DBMS Quiz - moderate</h2>
+        <p id="welcome"></p>
+        <div class="progress" id="progress">Question 1 of 5</div>
+        <div class="timer" id="timer">Time Left: <span id="time">30</span>s</div>
+        <div class="question" id="question">Question will appear here</div>
+        <div class="options" id="options"></div>
+        <div class="navigation">
+            <button id="prev">Previous</button>
+            <button id="next">Next</button>
+        </div>
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        window.onload = function () {
+            let username = localStorage.getItem("username") || "Guest";
+            document.getElementById("welcome").textContent = `Welcome, ${username}!`;
+
+            const questions = [
+                { q: "Which normal form ensures that there are no partial dependencies?", a: "2NF", o: ["1NF", "2NF", "3NF", "BCNF"] },
+                { q: "What is the primary purpose of an index in a database?", a: "To speed up data retrieval", o: ["To store data", "To enforce constraints", "To speed up data retrieval", "To define relationships"] },
+                { q: "Which SQL clause is used to filter groups after the GROUP BY statement?", a: "HAVING", o: ["WHERE", "HAVING", "ORDER BY", "DISTINCT"] },
+                { q: "Which of the following is NOT a type of database model?", a: "Indexed Model", o: ["Hierarchical Model", "Network Model", "Indexed Model", "Relational Model"] },
+                { q: "What is the function of a foreign key?", a: "To establish relationships between tables", o: ["To ensure uniqueness", "To store duplicate data", "To establish relationships between tables", "To speed up queries"] },
+                { q: "Which type of join returns only the matching rows between two tables?", a: "INNER JOIN", o: ["LEFT JOIN", "RIGHT JOIN", "FULL OUTER JOIN", "INNER JOIN"] },
+                { q: "What does ACID stand for in database transactions?", a: "Atomicity, Consistency, Isolation, Durability", o: ["Atomicity, Control, Integrity, Dependency", "Atomicity, Consistency, Isolation, Durability", "Automation, Concurrency, Isolation, Data", "Accuracy, Consistency, Integrity, Dependency"] },
+                { q: "Which of the following commands removes all rows from a table but retains its structure?", a: "TRUNCATE", o: ["DELETE", "DROP", "TRUNCATE", "REMOVE"] },
+                { q: "Which SQL function is used to return the number of records in a result set?", a: "COUNT()", o: ["SUM()", "AVG()", "COUNT()", "TOTAL()"] },
+                { q: "What is a primary key?", a: "A unique identifier for a record", o: ["A duplicate field", "A unique identifier for a record", "A field used to store NULL values", "A foreign key reference"] },
+                { q: "Which of the following is a NoSQL database?", a: "MongoDB", o: ["PostgreSQL", "MongoDB", "SQLite", "Oracle"] },
+                { q: "What is the main advantage of using database normalization?", a: "To reduce redundancy", o: ["To increase redundancy", "To improve indexing", "To reduce redundancy", "To speed up queries"] },
+                { q: "Which SQL keyword is used to retrieve unique values from a column?", a: "DISTINCT", o: ["ORDER BY", "DISTINCT", "UNIQUE", "FILTER"] },
+                { q: "Which command is used to change an existing database record?", a: "UPDATE", o: ["ALTER", "UPDATE", "MODIFY", "SET"] },
+                { q: "What is the purpose of the GROUP BY clause in SQL?", a: "To group rows with the same values", o: ["To delete duplicate records", "To sort records", "To group rows with the same values", "To create indexes"] },
+                { q: "Which of the following commands deletes both the table structure and the data?", a: "DROP", o: ["DELETE", "DROP", "TRUNCATE", "CLEAR"] },
+                { q: "Which SQL statement is used to retrieve data from a database?", a: "SELECT", o: ["FETCH", "GET", "SELECT", "QUERY"] },
+                { q: "What is the main characteristic of a relational database?", a: "It organizes data into tables", o: ["It uses key-value pairs", "It stores data in flat files", "It organizes data into tables", "It does not enforce relationships"] },
+                { q: "Which SQL clause is used to limit the number of returned rows?", a: "LIMIT", o: ["TOP", "LIMIT", "RESTRICT", "ORDER"] },
+                { q: "Which type of key is used to ensure a column cannot have duplicate values?", a: "Unique Key", o: ["Foreign Key", "Unique Key", "Primary Key", "Candidate Key"] }
+            ];
+
+
+            
+            let currentQuestion = 0;
+            let score = 0;
+            let selectedAnswer = null;
+            let timer = 30;
+            let interval;
+
+            function updateProgress() {
+                document.getElementById("progress").textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+            }
+
+            function startTimer() {
+                clearInterval(interval);
+                timer = 30;
+                document.getElementById("time").textContent = timer;
+                interval = setInterval(() => {
+                    if (timer > 0) {
+                        timer--;
+                        document.getElementById("time").textContent = timer;
+                    } else {
+                        clearInterval(interval);
+                        alert("Time is up!");
+                        nextQuestion();
+                    }
+                }, 1000);
+            }
+
+            function nextQuestion() {
+                if (selectedAnswer === questions[currentQuestion].a) score++;
+                currentQuestion++;
+                loadQuestion();
+            }
+
+            function loadQuestion() {
+                if (currentQuestion >= questions.length) {
+                    clearInterval(interval);
+                    document.getElementById("timer").style.display = "none";
+                    document.getElementById("question").style.display = "none";
+                    document.getElementById("options").style.display = "none";
+                    document.getElementById("progress").style.display = "none";
+                    document.querySelector(".navigation").style.display = "none";
+                    document.getElementById("result").style.display = "block";
+                    document.getElementById("result").textContent = `Quiz Finished! Your Score: ${score}/${questions.length}`;
+                    return;
+                }
+                document.getElementById("question").textContent = questions[currentQuestion].q;
+                document.getElementById("options").innerHTML = "";
+                selectedAnswer = null;
+                if (currentQuestion > 0) {
+                    document.getElementById("prev").disabled = false;  
+                }
+                else {
+                    document.getElementById("prev").disabled = true;    
+                }
+                document.getElementById("next").disabled = true; // Disable next button on new question
+                updateProgress();
+                
+                questions[currentQuestion].o.forEach(option => {
+                    const button = document.createElement("button");
+                    button.classList.add("option");
+                    button.textContent = option;
+                    button.onclick = () => {
+                        document.querySelectorAll(".option").forEach(btn => btn.style.background = "#262424");
+                        button.style.background = "#4e4a4a";
+                        selectedAnswer = option;
+                        document.getElementById("next").disabled = false; // Enable next button when an option is selected
+                    };
+                    document.getElementById("options").appendChild(button);
+                });
+                startTimer();
+            }
+
+            document.getElementById("next").addEventListener("click", function () {
+                if (!selectedAnswer) {
+                    alert("Please select an answer before proceeding.");
+                    return;
+                }
+                nextQuestion();
+            });
+
+            document.getElementById("prev").addEventListener("click", function () {
+                if (currentQuestion > 0) {
+                    currentQuestion--;
+                    loadQuestion();
+                }
+            });
+
+            loadQuestion();
+        };
+    </script>
+</body>
+</html>

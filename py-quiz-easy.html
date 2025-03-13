@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Quiz - Easy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="question.css">
+</head>
+<body>
+    <div class="quiz-container">
+        <h2>Python Quiz - Easy</h2>
+        <p id="welcome"></p>
+        <div class="progress" id="progress">Question 1 of 5</div>
+        <div class="timer" id="timer">Time Left: <span id="time">30</span>s</div>
+        <div class="question" id="question">Question will appear here</div>
+        <div class="options" id="options"></div>
+        <div class="navigation">
+            <button id="prev">Previous</button>
+            <button id="next">Next</button>
+        </div>
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        window.onload = function () {
+            let username = localStorage.getItem("username") || "Guest";
+            document.getElementById("welcome").textContent = `Welcome, ${username}!`;
+
+            const questions = [
+                { q: "Which keyword is used to define a function in Python?", a: "def", o: ["define", "def", "function", "fun"] },
+                { q: "Which data type is used to store a sequence of characters in Python?", a: "str", o: ["list", "tuple", "str", "char"] },
+                { q: "What will `print(type(10))` output?", a: "<class 'int'>", o: ["<class 'float'>", "<class 'int'>", "<class 'str'>", "<class 'boolean'>"] },
+                { q: "Which of these is used to take user input in Python?", a: "input()", o: ["input()", "scan()", "read()", "get()"] },
+                { q: "Which operator is used for exponentiation in Python?", a: "**", o: ["^", "**", "//", "%%"] },
+                { q: "How do you start a comment in Python?", a: "#", o: ["//", "#", "/*", "--"] },
+                { q: "Which function is used to find the length of a string or list?", a: "len()", o: ["length()", "count()", "size()", "len()"] },
+                { q: "Which of these is a valid Python variable name?", a: "my_variable", o: ["2variable", "my-variable", "my_variable", "my variable"] },
+                { q: "Which of these is an immutable data type in Python?", a: "tuple", o: ["list", "dictionary", "tuple", "set"] },
+                { q: "What is the default return value of a function if no return statement is used?", a: "None", o: ["0", "None", "undefined", "empty"] },
+                { q: "Which of the following is NOT a valid Python loop?", a: "repeat", o: ["for", "while", "repeat", "loop"] },
+                { q: "Which function converts a string to an integer?", a: "int()", o: ["str()", "int()", "float()", "char()"] },
+                { q: "What is the correct way to declare a list in Python?", a: "[1, 2, 3]", o: ["(1, 2, 3)", "{1, 2, 3}", "[1, 2, 3]", "<1, 2, 3>"] },
+                { q: "How do you check if two values are equal in Python?", a: "==", o: ["==", "=", "===", "!="] },
+                { q: "Which function removes an item from a list?", a: "remove()", o: ["delete()", "pop()", "remove()", "discard()"] },
+                { q: "Which keyword is used to handle exceptions?", a: "try", o: ["catch", "except", "try", "error"] },
+                { q: "What does `bool('False')` return in Python?", a: "True", o: ["False", "0", "True", "None"] },
+                { q: "Which method adds an element to the end of a list?", a: "append()", o: ["insert()", "push()", "append()", "extend()"] },
+                { q: "Which keyword is used to define a class in Python?", a: "class", o: ["struct", "class", "define", "object"] },
+                { q: "Which symbol is used to indent code blocks in Python?", a: "Whitespace", o: ["{}", "[]", "Whitespace", "Semicolon"] }
+            ];
+            let currentQuestion = 0;
+            let score = 0;
+            let selectedAnswer = null;
+            let timer = 30;
+            let interval;
+
+            function updateProgress() {
+                document.getElementById("progress").textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+            }
+
+            function startTimer() {
+                clearInterval(interval);
+                timer = 30;
+                document.getElementById("time").textContent = timer;
+                interval = setInterval(() => {
+                    if (timer > 0) {
+                        timer--;
+                        document.getElementById("time").textContent = timer;
+                    } else {
+                        clearInterval(interval);
+                        alert("Time is up!");
+                        nextQuestion();
+                    }
+                }, 1000);
+            }
+
+            function nextQuestion() {
+                if (selectedAnswer === questions[currentQuestion].a) score++;
+                currentQuestion++;
+                loadQuestion();
+            }
+
+            function loadQuestion() {
+                if (currentQuestion >= questions.length) {
+                    clearInterval(interval);
+                    document.getElementById("timer").style.display = "none";
+                    document.getElementById("question").style.display = "none";
+                    document.getElementById("options").style.display = "none";
+                    document.getElementById("progress").style.display = "none";
+                    document.querySelector(".navigation").style.display = "none";
+                    document.getElementById("result").style.display = "block";
+                    document.getElementById("result").textContent = `Quiz Finished! Your Score: ${score}/${questions.length}`;
+                    return;
+                }
+                document.getElementById("question").textContent = questions[currentQuestion].q;
+                document.getElementById("options").innerHTML = "";
+                selectedAnswer = null;
+                if (currentQuestion > 0) {
+                    document.getElementById("prev").disabled = false;  
+                }
+                else {
+                    document.getElementById("prev").disabled = true;    
+                }
+                document.getElementById("next").disabled = true; // Disable next button on new question  
+                updateProgress();
+                questions[currentQuestion].o.forEach(option => {
+                    const button = document.createElement("button");
+                    button.classList.add("option");
+                    button.textContent = option;
+                    button.onclick = () => {
+                        document.querySelectorAll(".option").forEach(btn => btn.style.background = "#262424");
+                        button.style.background = "#4e4a4a";
+                        selectedAnswer = option;
+                        document.getElementById("next").disabled = false; // Enable next button when an option is selected
+                    };
+                    document.getElementById("options").appendChild(button);
+                });
+                startTimer();
+            }
+            
+            document.getElementById("next").addEventListener("click", function () {
+                nextQuestion();
+            });
+            document.getElementById("prev").addEventListener("click", function () {
+                    if (currentQuestion > 0) {
+                        currentQuestion--;
+                        loadQuestion();
+                    }
+                });
+            
+
+            loadQuestion();
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DBMS Quiz - Easy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="question.css">
+</head>
+<body>
+    <div class="quiz-container">
+        <h2>DBMS Quiz - Easy</h2>
+        <p id="welcome"></p>
+        <div class="progress" id="progress">Question 1 of 5</div>
+        <div class="timer" id="timer">Time Left: <span id="time">30</span>s</div>
+        <div class="question" id="question">Question will appear here</div>
+        <div class="options" id="options"></div>
+        <div class="navigation">
+            <button id="prev">Previous</button>
+            <button id="next">Next</button>
+        </div>
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        window.onload = function () {
+            let username = localStorage.getItem("username") || "Guest";
+            document.getElementById("welcome").textContent = `Welcome, ${username}!`;
+
+            const questions = [
+                { q: "What does DBMS stand for?", a: "Database Management System", o: ["Data Backup Management System", "Database Management System", "Digital Backup Monitoring System", "Database Monitoring Service"] },
+                { q: "Which of the following is NOT a type of database?", a: "Hardware Database", o: ["Hierarchical Database", "Network Database", "Hardware Database", "Relational Database"] },
+                { q: "Which language is used to query a database?", a: "SQL", o: ["HTML", "SQL", "C++", "Python"] },
+                { q: "What is a collection of related data called?", a: "Database", o: ["Spreadsheet", "Table", "Database", "Index"] },
+                { q: "Which of the following is a DBMS software?", a: "MySQL", o: ["MySQL", "Google Docs", "MS Word", "Photoshop"] },
+                { q: "Which key uniquely identifies a record in a table?", a: "Primary Key", o: ["Foreign Key", "Composite Key", "Primary Key", "Secondary Key"] },
+                { q: "What does SQL stand for?", a: "Structured Query Language", o: ["Structured Query Language", "System Query Logic", "Simple Query Language", "Sequential Query List"] },
+                { q: "Which SQL clause is used to filter records?", a: "WHERE", o: ["ORDER BY", "HAVING", "GROUP BY", "WHERE"] },
+                { q: "Which command is used to remove all records from a table?", a: "DELETE", o: ["REMOVE", "DELETE", "ERASE", "CLEAR"] },
+                { q: "What is the purpose of an index in a database?", a: "To speed up searches", o: ["To store images", "To speed up searches", "To create reports", "To delete records"] },
+                { q: "Which of the following is a NoSQL database?", a: "MongoDB", o: ["PostgreSQL", "MongoDB", "SQLite", "Oracle"] },
+                { q: "Which SQL statement is used to insert a new record into a table?", a: "INSERT INTO", o: ["INSERT INTO", "ADD RECORD", "NEW ENTRY", "UPDATE"] },
+                { q: "Which normal form removes repeating groups?", a: "First Normal Form (1NF)", o: ["First Normal Form (1NF)", "Second Normal Form (2NF)", "Third Normal Form (3NF)", "Boyce-Codd Normal Form (BCNF)"] },
+                { q: "What is a foreign key used for?", a: "To establish relationships between tables", o: ["To store duplicate records", "To generate reports", "To establish relationships between tables", "To speed up queries"] },
+                { q: "What type of database organizes data in tables?", a: "Relational Database", o: ["Hierarchical Database", "Document Database", "Relational Database", "Network Database"] },
+                { q: "Which SQL command is used to update a record?", a: "UPDATE", o: ["CHANGE", "UPDATE", "MODIFY", "ALTER"] },
+                { q: "What is the purpose of the GROUP BY clause?", a: "To group records with similar values", o: ["To delete duplicate records", "To sort records", "To group records with similar values", "To add new records"] },
+                { q: "Which SQL function returns the number of rows in a result set?", a: "COUNT()", o: ["SUM()", "COUNT()", "AVG()", "TOTAL()"] },
+                { q: "What is the purpose of a transaction in DBMS?", a: "To ensure data integrity", o: ["To speed up searches", "To store images", "To ensure data integrity", "To create backups"] },
+                { q: "Which SQL keyword is used to sort the result set?", a: "ORDER BY", o: ["SORT", "GROUP BY", "ORDER BY", "RANK"] }
+            ];
+
+            
+            let currentQuestion = 0;
+            let score = 0;
+            let selectedAnswer = null;
+            let timer = 30;
+            let interval;
+
+            function updateProgress() {
+                document.getElementById("progress").textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+            }
+
+            function startTimer() {
+                clearInterval(interval);
+                timer = 30;
+                document.getElementById("time").textContent = timer;
+                interval = setInterval(() => {
+                    if (timer > 0) {
+                        timer--;
+                        document.getElementById("time").textContent = timer;
+                    } else {
+                        clearInterval(interval);
+                        alert("Time is up!");
+                        nextQuestion();
+                    }
+                }, 1000);
+            }
+
+            function nextQuestion() {
+                if (selectedAnswer === questions[currentQuestion].a) score++;
+                currentQuestion++;
+                loadQuestion();
+            }
+
+            function loadQuestion() {
+                if (currentQuestion >= questions.length) {
+                    clearInterval(interval);
+                    document.getElementById("timer").style.display = "none";
+                    document.getElementById("question").style.display = "none";
+                    document.getElementById("options").style.display = "none";
+                    document.getElementById("progress").style.display = "none";
+                    document.querySelector(".navigation").style.display = "none";
+                    document.getElementById("result").style.display = "block";
+                    document.getElementById("result").textContent = `Quiz Finished! Your Score: ${score}/${questions.length}`;
+                    return;
+                }
+                document.getElementById("question").textContent = questions[currentQuestion].q;
+                document.getElementById("options").innerHTML = "";
+                selectedAnswer = null;
+                if (currentQuestion > 0) {
+                    document.getElementById("prev").disabled = false;  
+                }
+                else {
+                    document.getElementById("prev").disabled = true;    
+                }
+                document.getElementById("next").disabled = true; // Disable next button on new question
+                updateProgress();
+                
+                questions[currentQuestion].o.forEach(option => {
+                    const button = document.createElement("button");
+                    button.classList.add("option");
+                    button.textContent = option;
+                    button.onclick = () => {
+                        document.querySelectorAll(".option").forEach(btn => btn.style.background = "#262424");
+                        button.style.background = "#4e4a4a";
+                        selectedAnswer = option;
+                        document.getElementById("next").disabled = false; // Enable next button when an option is selected
+                    };
+                    document.getElementById("options").appendChild(button);
+                });
+                startTimer();
+            }
+
+            document.getElementById("next").addEventListener("click", function () {
+                if (!selectedAnswer) {
+                    alert("Please select an answer before proceeding.");
+                    return;
+                }
+                nextQuestion();
+            });
+
+            document.getElementById("prev").addEventListener("click", function () {
+                if (currentQuestion > 0) {
+                    currentQuestion--;
+                    loadQuestion();
+                }
+            });
+
+            loadQuestion();
+        };
+    </script>
+</body>
+</html>

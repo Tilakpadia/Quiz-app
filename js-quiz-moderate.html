@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript Quiz - moderate</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="question.css">
+</head>
+<body>
+    <div class="quiz-container">
+        <h2>JavaScript Quiz - moderate</h2>
+        <p id="welcome"></p>
+        <div class="progress" id="progress">Question 1 of 5</div>
+        <div class="timer" id="timer">Time Left: <span id="time">30</span>s</div>
+        <div class="question" id="question">Question will appear here</div>
+        <div class="options" id="options"></div>
+        <div class="navigation">
+            <button id="prev">Previous</button>
+            <button id="next">Next</button>
+        </div>
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        window.onload = function () {
+            let username = localStorage.getItem("username") || "Guest";
+            document.getElementById("welcome").textContent = `Welcome, ${username}!`;
+
+            const questions = [
+                { q: "Which of the following is a primitive data type in JavaScript?", a: "Symbol", o: ["Object", "Function", "Symbol", "Array"] },
+                { q: "Which keyword is used to define a constant variable in JavaScript?", a: "const", o: ["let", "var", "const", "static"] },
+                { q: "Which method is used to convert a JSON string into a JavaScript object?", a: "JSON.parse()", o: ["JSON.stringify()", "JSON.parse()", "parseJSON()", "stringToObject()"] },
+                { q: "What does the `typeof` operator return for `null`?", a: "'object'", o: ["'null'", "'undefined'", "'object'", "'string'"] },
+                { q: "Which method removes the last element from an array?", a: "pop()", o: ["shift()", "slice()", "pop()", "splice()"] },
+                { q: "What will `console.log([] == false)` output?", a: "true", o: ["false", "true", "undefined", "NaN"] },
+                { q: "Which function is used to execute a function repeatedly at fixed intervals?", a: "setInterval()", o: ["setTimeout()", "setInterval()", "repeat()", "loop()"] },
+                { q: "What will `console.log(1 + '1')` output?", a: "'11'", o: ["2", "'11'", "NaN", "Error"] },
+                { q: "Which loop executes at least once, even if the condition is false?", a: "do...while", o: ["for", "while", "do...while", "foreach"] },
+                { q: "Which of the following is NOT a valid JavaScript variable name?", a: "2name", o: ["_name", "camelCase", "2name", "$variable"] },
+                { q: "What will `console.log(typeof NaN)` output?", a: "'number'", o: ["'undefined'", "'NaN'", "'number'", "'object'"] },
+                { q: "Which method is used to add a new element to the beginning of an array?", a: "unshift()", o: ["push()", "unshift()", "shift()", "concat()"] },
+                { q: "Which JavaScript function is used to delay execution of a function?", a: "setTimeout()", o: ["setTimeout()", "setInterval()", "delay()", "wait()"] },
+                { q: "What will `console.log(0.1 + 0.2 === 0.3)` output?", a: "false", o: ["true", "false", "undefined", "Error"] },
+                { q: "Which statement is used to handle exceptions in JavaScript?", a: "try...catch", o: ["try...catch", "catch...throw", "error...catch", "exception...handle"] },
+                { q: "Which method is used to check if an array contains a specific value?", a: "includes()", o: ["has()", "contains()", "exists()", "includes()"] },
+                { q: "What will `console.log(typeof function(){})` output?", a: "'function'", o: ["'object'", "'function'", "'undefined'", "'string'"] },
+                { q: "Which operator is used for strict equality comparison?", a: "===", o: ["==", "!=", "===", "!=="] },
+                { q: "Which built-in method joins two or more arrays?", a: "concat()", o: ["merge()", "concat()", "combine()", "append()"] },
+                { q: "What is the output of `console.log([] + [])`?", a: "'' (empty string)", o: ["0", "undefined", "'' (empty string)", "NaN"] }
+            ];
+
+
+            
+            let currentQuestion = 0;
+            let score = 0;
+            let selectedAnswer = null;
+            let timer = 30;
+            let interval;
+
+            function updateProgress() {
+                document.getElementById("progress").textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+            }
+
+            function startTimer() {
+                clearInterval(interval);
+                timer = 30;
+                document.getElementById("time").textContent = timer;
+                interval = setInterval(() => {
+                    if (timer > 0) {
+                        timer--;
+                        document.getElementById("time").textContent = timer;
+                    } else {
+                        clearInterval(interval);
+                        alert("Time is up!");
+                        nextQuestion();
+                    }
+                }, 1000);
+            }
+
+            function nextQuestion() {
+                if (selectedAnswer === questions[currentQuestion].a) score++;
+                currentQuestion++;
+                loadQuestion();
+            }
+
+            function loadQuestion() {
+                if (currentQuestion >= questions.length) {
+                    clearInterval(interval);
+                    document.getElementById("timer").style.display = "none";
+                    document.getElementById("question").style.display = "none";
+                    document.getElementById("options").style.display = "none";
+                    document.getElementById("progress").style.display = "none";
+                    document.querySelector(".navigation").style.display = "none";
+                    document.getElementById("result").style.display = "block";
+                    document.getElementById("result").textContent = `Quiz Finished! Your Score: ${score}/${questions.length}`;
+                    return;
+                }
+                document.getElementById("question").textContent = questions[currentQuestion].q;
+                document.getElementById("options").innerHTML = "";
+                selectedAnswer = null;
+                if (currentQuestion > 0) {
+                    document.getElementById("prev").disabled = false;  
+                }
+                else {
+                    document.getElementById("prev").disabled = true;    
+                }
+                document.getElementById("next").disabled = true; // Disable next button on new question
+                updateProgress();
+                
+                questions[currentQuestion].o.forEach(option => {
+                    const button = document.createElement("button");
+                    button.classList.add("option");
+                    button.textContent = option;
+                    button.onclick = () => {
+                        document.querySelectorAll(".option").forEach(btn => btn.style.background = "#262424");
+                        button.style.background = "#4e4a4a";
+                        selectedAnswer = option;
+                        document.getElementById("next").disabled = false; // Enable next button when an option is selected
+
+                    };
+                    document.getElementById("options").appendChild(button);
+                })
+                startTimer();
+            }
+
+            document.getElementById("next").addEventListener("click", function () {
+                if (!selectedAnswer) {
+                    alert("Please select an answer before proceeding.");
+                    return;
+                }
+                nextQuestion();
+            });
+
+            document.getElementById("prev").addEventListener("click", function () {
+                if (currentQuestion > 0) {
+                    currentQuestion--;
+                    loadQuestion();
+                }
+            });
+
+            loadQuestion();
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript Quiz - Easy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="question.css">
+</head>
+<body>
+    <div class="quiz-container">
+        <h2>JavaScript Quiz - Easy</h2>
+        <p id="welcome"></p>
+        <div class="progress" id="progress">Question 1 of 5</div>
+        <div class="timer" id="timer">Time Left: <span id="time">30</span>s</div>
+        <div class="question" id="question">Question will appear here</div>
+        <div class="options" id="options"></div>
+        <div class="navigation">
+            <button id="prev">Previous</button>
+            <button id="next">Next</button>
+        </div>
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        window.onload = function () {
+            let username = localStorage.getItem("username") || "Guest";
+            document.getElementById("welcome").textContent = `Welcome, ${username}!`;
+
+            const questions = [
+            { q: "What is JavaScript mainly used for?", a: "Web Development", o: ["Web Development", "Networking", "Machine Learning", "Database Management"] },
+            { q: "Which keyword is used to declare a variable in JavaScript?", a: "let", o: ["var", "const", "let", "int"] },
+            { q: "What symbol is used for single-line comments in JavaScript?", a: "//", o: ["//", "#", "<!-- -->", "/* */"] },
+            { q: "What does `console.log()` do?", a: "Prints output to console", o: ["Declares a variable", "Creates a function", "Prints output to console", "Sends an alert"] },
+            { q: "Which company developed JavaScript?", a: "Netscape", o: ["Apple", "Google", "Netscape", "Microsoft"] },
+            { q: "Which data type is NOT supported in JavaScript?", a: "Integer", o: ["Boolean", "Object", "String", "Integer"] },
+            { q: "Which operator is used for strict equality in JavaScript?", a: "===", o: ["==", "!==", "===", "="] },
+            { q: "Which function is used to convert a string to a number?", a: "parseInt()", o: ["toString()", "Number()", "parseInt()", "toNumber()"] },
+            { q: "Which built-in method joins two or more arrays?", a: "concat()", o: ["concat()", "join()", "merge()", "combine()"] },
+            { q: "How do you declare a function in JavaScript?", a: "function myFunction(){}", o: ["function myFunction(){}", "func myFunction()", "def myFunction()", "create function myFunction()"] },
+            { q: "Which of these is NOT a JavaScript framework?", a: "Django", o: ["React", "Vue", "Django", "Angular"] },
+            { q: "Which keyword is used to define a constant variable?", a: "const", o: ["var", "let", "const", "define"] },
+            { q: "Which method removes the last element from an array?", a: "pop()", o: ["slice()", "splice()", "pop()", "remove()"] },
+            { q: "Which symbol is used to access object properties?", a: ".", o: [".", ":", "#", "$"] },
+            { q: "Which function is used to execute a function repeatedly at intervals?", a: "setInterval()", o: ["setTimeout()", "repeat()", "setInterval()", "loop()"] },
+            { q: "Which of the following is NOT a valid JavaScript variable name?", a: "2name", o: ["my_variable", "_name", "2name", "camelCase"] },
+            { q: "Which statement correctly declares an array in JavaScript?", a: "let arr = [1,2,3]", o: ["let arr = [1,2,3]", "let arr = (1,2,3)", "let arr = {1,2,3}", "let arr = <1,2,3>"] },
+            { q: "What is the default value of an uninitialized variable?", a: "undefined", o: ["null", "undefined", "0", "empty"] },
+            { q: "Which function is used to delay execution of code?", a: "setTimeout()", o: ["delay()", "setInterval()", "setTimeout()", "wait()"] },
+            { q: "Which loop runs at least once even if the condition is false?", a: "do...while", o: ["for", "while", "do...while", "foreach"] }
+        ];
+
+            
+            let currentQuestion = 0;
+            let score = 0;
+            let selectedAnswer = null;
+            let timer = 30;
+            let interval;
+
+            function updateProgress() {
+                document.getElementById("progress").textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+            }
+
+            function startTimer() {
+                clearInterval(interval);
+                timer = 30;
+                document.getElementById("time").textContent = timer;
+                interval = setInterval(() => {
+                    if (timer > 0) {
+                        timer--;
+                        document.getElementById("time").textContent = timer;
+                    } else {
+                        clearInterval(interval);
+                        alert("Time is up!");
+                        nextQuestion();
+                    }
+                }, 1000);
+            }
+
+            function nextQuestion() {
+                if (selectedAnswer === questions[currentQuestion].a) score++;
+                currentQuestion++;
+                loadQuestion();
+            }
+
+            function loadQuestion() {
+                if (currentQuestion >= questions.length) {
+                    clearInterval(interval);
+                    document.getElementById("timer").style.display = "none";
+                    document.getElementById("question").style.display = "none";
+                    document.getElementById("options").style.display = "none";
+                    document.getElementById("progress").style.display = "none";
+                    document.querySelector(".navigation").style.display = "none";
+                    document.getElementById("result").style.display = "block";
+                    document.getElementById("result").textContent = `Quiz Finished! Your Score: ${score}/${questions.length}`;
+                    return;
+                }
+                document.getElementById("question").textContent = questions[currentQuestion].q;
+                document.getElementById("options").innerHTML = "";
+                selectedAnswer = null;
+                if (currentQuestion > 0) {
+                    document.getElementById("prev").disabled = false;  
+                }
+                else {
+                    document.getElementById("prev").disabled = true;    
+                }
+                document.getElementById("next").disabled = true; // Disable next button on new question
+                updateProgress();
+                
+                questions[currentQuestion].o.forEach(option => {
+                    const button = document.createElement("button");
+                    button.classList.add("option");
+                    button.textContent = option;
+                    button.onclick = () => {
+                        document.querySelectorAll(".option").forEach(btn => btn.style.background = "#262424");
+                        button.style.background = "#4e4a4a";
+                        selectedAnswer = option;
+                        document.getElementById("next").disabled = false; // Enable next button when an option is selected
+                    };
+                    document.getElementById("options").appendChild(button);
+                });
+                startTimer();
+            }
+
+            document.getElementById("next").addEventListener("click", function () {
+                if (!selectedAnswer) {
+                    alert("Please select an answer before proceeding.");
+                    return;
+                }
+                nextQuestion();
+            });
+
+            document.getElementById("prev").addEventListener("click", function () {
+                if (currentQuestion > 0) {
+                    currentQuestion--;
+                    loadQuestion();
+                }
+            });
+
+            loadQuestion();
+        };
+    </script>
+</body>
+</html>

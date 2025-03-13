@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript Quiz - hard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="question.css">
+</head>
+<body>
+    <div class="quiz-container">
+        <h2>JavaScript Quiz - hard</h2>
+        <p id="welcome"></p>
+        <div class="progress" id="progress">Question 1 of 5</div>
+        <div class="timer" id="timer">Time Left: <span id="time">30</span>s</div>
+        <div class="question" id="question">Question will appear here</div>
+        <div class="options" id="options"></div>
+        <div class="navigation">
+            <button id="prev">Previous</button>
+            <button id="next">Next</button>
+        </div>
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        window.onload = function () {
+            let username = localStorage.getItem("username") || "Guest";
+            document.getElementById("welcome").textContent = `Welcome, ${username}!`;
+
+            const questions = [
+                { q: "Which of the following will evaluate to true in JavaScript?", a: "`[] == false`", o: ["`[] == false`", "`{} == false`", "`null == true`", "`NaN == NaN`"] },
+                { q: "What is the output of `console.log(typeof NaN)`?", a: "'number'", o: ["'number'", "'NaN'", "'undefined'", "'object'"] },
+                { q: "Which of the following is NOT a valid way to define a function in JavaScript?", a: "`function = myFunction() {}`", o: ["`function myFunction() {}`", "`const myFunction = function() {}`", "`function = myFunction() {}`", "`const myFunction = () => {}`"] },
+                { q: "What will `console.log([] + {})` output?", a: "'[object Object]'", o: ["'{}'", "'undefined'", "'[object Object]'", "'0'"] },
+                { q: "Which method is used to freeze an object so that its properties cannot be modified?", a: "Object.freeze()", o: ["Object.seal()", "Object.freeze()", "Object.lock()", "Object.immutable()"] },
+                { q: "Which feature allows JavaScript to execute code asynchronously?", a: "Event Loop", o: ["Call Stack", "Heap Memory", "Event Loop", "Synchronous Execution"] },
+                { q: "What does `Promise.resolve().then(() => console.log(1)).then(() => console.log(2))` output?", a: "1 2", o: ["2 1", "1 2", "undefined", "Error"] },
+                { q: "Which statement about JavaScript closures is correct?", a: "A closure allows a function to access variables from its outer scope even after the outer function has executed", o: ["A closure allows a function to modify its own parameters", "Closures do not exist in JavaScript", "A closure allows a function to access variables from its outer scope even after the outer function has executed", "Closures can only access global variables"] },
+                { q: "What is the purpose of the `bind()` method?", a: "It binds a function to a specific object", o: ["It prevents a function from being called", "It permanently binds an event listener", "It binds a function to a specific object", "It creates a new function"] },
+                { q: "Which of the following will correctly clone an object?", a: "Object.assign({}, obj)", o: ["Object.assign({}, obj)", "const newObj = obj", "const newObj = JSON.stringify(obj)", "Object.clone(obj)"] },
+                { q: "What is the output of `console.log(typeof null)`?", a: "'object'", o: ["'null'", "'undefined'", "'object'", "'string'"] },
+                { q: "Which operator checks both value and type in JavaScript?", a: "===", o: ["===", "==", "!==", "!="] },
+                { q: "Which method is used to execute a function once after a specified time interval?", a: "setTimeout()", o: ["setInterval()", "setTimeout()", "clearTimeout()", "delay()"] },
+                { q: "What will `console.log(1 + '1' - 1)` output?", a: "10", o: ["'11'", "10", "1", "NaN"] },
+                { q: "Which JavaScript method can be used to optimize function performance by executing it only once per specified time?", a: "throttle()", o: ["debounce()", "setInterval()", "setTimeout()", "throttle()"] },
+                { q: "What will `console.log('5' - 3)` output?", a: "2", o: ["'53'", "NaN", "2", "8"] },
+                { q: "What does `async` keyword do when used with a function?", a: "Makes the function return a promise", o: ["Runs the function in the background", "Prevents the function from executing", "Makes the function return a promise", "Turns the function into a synchronous function"] },
+                { q: "Which of the following is NOT a falsy value in JavaScript?", a: "'false'", o: ["0", "null", "'false'", "undefined"] },
+                { q: "Which JavaScript function executes a function at specified intervals?", a: "setInterval()", o: ["setTimeout()", "requestAnimationFrame()", "setInterval()", "setImmediate()"] },
+                { q: "What will `console.log(typeof NaN)` return?", a: "'number'", o: ["'number'", "'undefined'", "'object'", "'NaN'"] }
+            ];
+
+
+
+            
+            let currentQuestion = 0;
+            let score = 0;
+            let selectedAnswer = null;
+            let timer = 30;
+            let interval;
+
+            function updateProgress() {
+                document.getElementById("progress").textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+            }
+
+            function startTimer() {
+                clearInterval(interval);
+                timer = 30;
+                document.getElementById("time").textContent = timer;
+                interval = setInterval(() => {
+                    if (timer > 0) {
+                        timer--;
+                        document.getElementById("time").textContent = timer;
+                    } else {
+                        clearInterval(interval);
+                        alert("Time is up!");
+                        nextQuestion();
+                    }
+                }, 1000);
+            }
+
+            function nextQuestion() {
+                if (selectedAnswer === questions[currentQuestion].a) score++;
+                currentQuestion++;
+                loadQuestion();
+            }
+
+            function loadQuestion() {
+                if (currentQuestion >= questions.length) {
+                    clearInterval(interval);
+                    document.getElementById("timer").style.display = "none";
+                    document.getElementById("question").style.display = "none";
+                    document.getElementById("options").style.display = "none";
+                    document.getElementById("progress").style.display = "none";
+                    document.querySelector(".navigation").style.display = "none";
+                    document.getElementById("result").style.display = "block";
+                    document.getElementById("result").textContent = `Quiz Finished! Your Score: ${score}/${questions.length}`;
+                    return;
+                }
+                document.getElementById("question").textContent = questions[currentQuestion].q;
+                document.getElementById("options").innerHTML = "";
+                selectedAnswer = null;
+                if (currentQuestion > 0) {
+                    document.getElementById("prev").disabled = false;  
+                }
+                else {
+                    document.getElementById("prev").disabled = true;    
+                }
+                document.getElementById("next").disabled = true; // Disable next button on new question
+                updateProgress();
+                
+                questions[currentQuestion].o.forEach(option => {
+                    const button = document.createElement("button");
+                    button.classList.add("option");
+                    button.textContent = option;
+                    button.onclick = () => {
+                        document.querySelectorAll(".option").forEach(btn => btn.style.background = "#262424");
+                        button.style.background = "#4e4a4a";
+                        selectedAnswer = option;
+                        document.getElementById("next").disabled = false; // Enable next button when an option is selected
+                    };
+                    document.getElementById("options").appendChild(button);
+                });
+                startTimer();
+            }
+
+            document.getElementById("next").addEventListener("click", function () {
+                if (!selectedAnswer) {
+                    alert("Please select an answer before proceeding.");
+                    return;
+                }
+                nextQuestion();
+            });
+
+            document.getElementById("prev").addEventListener("click", function () {
+                if (currentQuestion > 0) {
+                    currentQuestion--;
+                    loadQuestion();
+                }
+            });
+
+            loadQuestion();
+        };
+    </script>
+</body>
+</html>

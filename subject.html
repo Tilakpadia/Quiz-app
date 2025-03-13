@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Selection</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #eee5da;
+            color: #262424;
+            margin: 0;
+            padding: 10px;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            max-width: 600px;
+        }
+        .card {
+            background: white;
+            color: #262424;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 150px;
+            cursor: pointer;
+            transition: transform 0.3s ease, background 0.3s;
+        }
+        .card img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .card:hover, .selected {
+            transform: scale(1.05);
+            background: #3a3a3a;
+            color: white;
+        }
+        .hidden {
+            display: none;
+        }
+        .level-container {
+            width: 100%;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .levels {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .level-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            font-size: 16px;
+        }
+        .level-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        @media (max-width: 480px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .card {
+                width: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card" onclick="selectSubject('js', this)">
+            <img src="https://logos-download.com/wp-content/uploads/2019/01/JavaScript_Logo-700x700.png" alt="JavaScript">
+            JavaScript
+        </div>
+        <div class="card" onclick="selectSubject('py', this)">
+            <img src="https://tse1.mm.bing.net/th?id=OIP.KHjKTchf1-EaO2UOJKBBwgHaEK&pid=Api&P=0&h=180" alt="Python">
+            Python
+        </div>
+        <div class="card" onclick="selectSubject('dbms', this)">
+            <img src="https://tse2.mm.bing.net/th?id=OIP.2cISBKn2aOp1pGmkWovLTQHaHa&pid=Api&P=0&h=180" alt="DBMS">
+            <br>DBMS
+        </div>
+    </div>
+
+    <div id="level-section" class="hidden level-container">
+        <h3>Select Difficulty Level</h3>
+        <div class="levels">
+            <div class="card level-card" onclick="startQuiz('easy')">
+                <div class="level-icon">🟢</div>
+                Easy
+            </div>
+            <div class="card level-card" onclick="startQuiz('moderate')">
+                <div class="level-icon">⚡</div>
+                Moderate
+            </div>
+            <div class="card level-card" onclick="startQuiz('hard')">
+                <div class="level-icon">🔥</div>
+                Hard
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedSubject = "";
+
+        function selectSubject(subject, card) {
+            selectedSubject = subject;
+            document.getElementById("level-section").classList.remove("hidden");
+            document.querySelectorAll(".container .card").forEach(card => card.classList.remove("selected"));
+            card.classList.add("selected");
+        }
+
+        function startQuiz(level) {
+            if (!selectedSubject) {
+                alert("Please select a subject first.");
+                return;
+            }
+            window.location.href = `${selectedSubject}-quiz-${level}.html`;
+        }
+    </script>
+</body>
+</html>

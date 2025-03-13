@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Quiz - hard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="question.css">
+</head>
+<body>
+    <div class="quiz-container">
+        <h2>Python Quiz - hard</h2>
+        <p id="welcome"></p>
+        <div class="progress" id="progress">Question 1 of 5</div>
+        <div class="timer" id="timer">Time Left: <span id="time">30</span>s</div>
+        <div class="question" id="question">Question will appear here</div>
+        <div class="options" id="options"></div>
+        <div class="navigation">
+            <button id="prev">Previous</button>
+            <button id="next">Next</button>
+        </div>
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        window.onload = function () {
+            let username = localStorage.getItem("username") || "Guest";
+            document.getElementById("welcome").textContent = `Welcome, ${username}!`;
+
+            const questions = [
+                { q: "Which Python module is used for handling JSON data?", a: "json", o: ["json", "pickle", "csv", "data"] },
+                { q: "What is the output of `bool([])` in Python?", a: "False", o: ["None", "False", "Error", "True"] },
+                { q: "Which keyword is used for defining an anonymous function?", a: "lambda", o: ["def", "lambda", "func", "anonymous"] },
+                { q: "Which method removes the last item from a list?", a: "pop()", o: ["remove()", "delete()", "pop()", "discard()"] },
+                { q: "What is the difference between `is` and `==` in Python?", a: "`is` checks identity, `==` checks equality", o: ["They are the same", "`is` checks data type", "`is` checks identity, `==` checks equality", "`==` checks memory location"] },
+                { q: "Which function returns the number of items in an iterable?", a: "len()", o: ["count()", "len()", "size()", "length()"] },
+                { q: "What will `type({})` return in Python 3?", a: "dict", o: ["set", "dict", "tuple", "list"] },
+                { q: "Which keyword is used to exit a loop prematurely?", a: "break", o: ["continue", "stop", "exit", "break"] },
+                { q: "Which data type is unordered and unindexed?", a: "set", o: ["dictionary", "tuple", "set", "list"] },
+                { q: "What does the `enumerate()` function return?", a: "Index and value", o: ["Only index", "Index and value", "Only value", "A list"] },
+                { q: "Which function converts a string into a list?", a: "split()", o: ["join()", "split()", "list()", "parse()"] },
+                { q: "What is the purpose of `zip()` in Python?", a: "Combining iterables", o: ["Sorting elements", "Iterating in reverse", "Combining iterables", "Filtering elements"] },
+                { q: "Which method converts a dictionary’s keys into a list?", a: "keys()", o: ["items()", "values()", "keys()", "get_keys()"] },
+                { q: "Which operator is used to check if a value exists in a list?", a: "in", o: ["is", "exists", "contains", "in"] },
+                { q: "What is the correct way to open a file for reading?", a: "open('file.txt', 'r')", o: ["read('file.txt')", "file.open('file.txt')", "open('file.txt', 'r')", "file('file.txt', 'r')"] },
+                { q: "Which built-in function returns the absolute value of a number?", a: "abs()", o: ["abs()", "mod()", "fabs()", "ceil()"] },
+                { q: "What will `sorted([3, 1, 4, 1, 5, 9])` return?", a: "[1, 1, 3, 4, 5, 9]", o: ["[9, 5, 4, 3, 1, 1]", "[3, 1, 4, 1, 5, 9]", "[1, 1, 3, 4, 5, 9]", "[1, 3, 4, 1, 5, 9]"] },
+                { q: "Which method is used to add an element to a set?", a: "add()", o: ["push()", "insert()", "add()", "append()"] },
+                { q: "Which keyword is used to create a generator function?", a: "yield", o: ["return", "generate", "yield", "async"] },
+                { q: "Which function is used to get the memory address of an object?", a: "id()", o: ["address()", "location()", "id()", "memloc()"] }
+            ];
+
+            let currentQuestion = 0;
+            let score = 0;
+            let selectedAnswer = null;
+            let timer = 30;
+            let interval;
+
+            function updateProgress() {
+                document.getElementById("progress").textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+            }
+
+            function startTimer() {
+                clearInterval(interval);
+                timer = 30;
+                document.getElementById("time").textContent = timer;
+                interval = setInterval(() => {
+                    if (timer > 0) {
+                        timer--;
+                        document.getElementById("time").textContent = timer;
+                    } else {
+                        clearInterval(interval);
+                        alert("Time is up!");
+                        nextQuestion();
+                    }
+                }, 1000);
+            }
+
+            function nextQuestion() {
+                if (selectedAnswer === questions[currentQuestion].a) score++;
+                currentQuestion++;
+                loadQuestion();
+            }
+
+            function loadQuestion() {
+                if (currentQuestion >= questions.length) {
+                    clearInterval(interval);
+                    document.getElementById("timer").style.display = "none";
+                    document.getElementById("question").style.display = "none";
+                    document.getElementById("options").style.display = "none";
+                    document.getElementById("progress").style.display = "none";
+                    document.querySelector(".navigation").style.display = "none";
+                    document.getElementById("result").style.display = "block";
+                    document.getElementById("result").textContent = `Quiz Finished! Your Score: ${score}/${questions.length}`;
+                    return;
+                }
+                document.getElementById("question").textContent = questions[currentQuestion].q;
+                document.getElementById("options").innerHTML = "";
+                selectedAnswer = null;
+                if (currentQuestion > 0) {
+                    document.getElementById("prev").disabled = false;  
+                }
+                else {
+                    document.getElementById("prev").disabled = true;    
+                }
+                document.getElementById("next").disabled = true; // Disable next button on new question
+                updateProgress();
+                
+                questions[currentQuestion].o.forEach(option => {
+                    const button = document.createElement("button");
+                    button.classList.add("option");
+                    button.textContent = option;
+                    button.onclick = () => {
+                        document.querySelectorAll(".option").forEach(btn => btn.style.background = "#262424");
+                        button.style.background = "#4e4a4a";
+                        selectedAnswer = option;
+                        document.getElementById("next").disabled = false; // Enable next button when an option is selected
+                    };
+                    document.getElementById("options").appendChild(button);
+                });
+                startTimer();
+            }
+
+            document.getElementById("next").addEventListener("click", function () {
+                if (!selectedAnswer) {
+                    alert("Please select an answer before proceeding.");
+                    return;
+                }
+                nextQuestion();
+            });
+
+            document.getElementById("prev").addEventListener("click", function () {
+                if (currentQuestion > 0) {
+                    currentQuestion--;
+                    loadQuestion();
+                }
+            });
+
+            loadQuestion();
+        };
+    </script>
+</body>
+</html>
