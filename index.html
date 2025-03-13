@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Login</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #eee5da;
+            color: #262424;
+            margin: 0;
+        }
+        .login-container {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+            transition: transform 0.3s ease;
+        }
+        .login-container:hover {
+            transform: scale(1.05);
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-align: left;
+        }
+        input {
+            width: 95%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #262424;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 6px;
+            background: #262424;
+            color: white;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #3a3a3a;
+        }
+        .error {
+            color: red;
+            font-size: 14px;
+            display: none;
+        }
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 20px;
+            }
+            button {
+                font-size: 16px;
+                padding: 12px;
+            }
+            input {
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Login to Start Quiz</h2>
+        <!-- <label for="username">Your Name</label> -->
+        <input type="text" id="username" placeholder="Enter your name">
+        <p class="error" id="error-message">Please enter your name.</p>
+        <button onclick="login()">Lets GO 🚀</button>
+    </div>
+
+    <script>
+        function login() {
+            let username = document.getElementById("username").value.trim();
+            let errorMessage = document.getElementById("error-message");
+            const namepatten=/^[a-zA-Z]{3,}$/
+            if(username === "")
+            {
+                errorMessage.style.display = "block";
+                errorMessage.textContent="Please enter your name"
+                return;
+            }
+            else if(!namepatten.test(username))
+            {
+                errorMessage.style.display = "block";
+                errorMessage.textContent="user name should be atleast more than 3 characters or enter valid name"
+                return;
+            }
+            else{
+                errorMessage.style.display = "none";
+            }
+            // if (username === "") {
+                //     errorMessage.style.display = "block";
+                //     return;
+                // }
+            
+            localStorage.setItem("username", username);
+            window.location.href = "rules.html"; // Redirect to quiz page
+        }
+    </script>
+</body>
+</html>
